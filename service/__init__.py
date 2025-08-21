@@ -1,16 +1,18 @@
 """
 Package: service
 Package for the application models and service routes
-This module creates and configures the Flask app and sets up the logging
+This module creates and creates and configures the Flask app and sets up the logging
 and SQL database
 """
 import sys
 from flask import Flask
+from flask_talisman import Talisman
 from service import config
 from service.common import log_handlers
 
 # Create Flask application
 app = Flask(__name__)
+talisman = Talisman(app)
 app.config.from_object(config)
 
 # Import the routes After the Flask app is created
