@@ -1,5 +1,7 @@
 # DevOps Capstone Template
 
+![Build Status](https://github.com/adnancrnovrsanin/devops-capstone-project/actions/workflows/ci-build.yaml/badge.svg)
+
 [![License](https://img.shields.io/badge/License-Apache%202.0-blue.svg)](https://opensource.org/licenses/Apache-2.0)
 [![Python 3.9](https://img.shields.io/badge/Python-3.9-green.svg)](https://shields.io/)
 
@@ -9,7 +11,7 @@ This repository contains the starter code for the project in [**IBM-CD0285EN-Ski
 
 You should use this template to start your DevOps Capstone project. It contains all of the code that you will need to get started.
 
-Do Not fork this code! It is meant to be used by pressing the  <span style=color:white;background:green>**Use this Template**</span> button in GitHub. This will copy the code to your own repository with no connection back to the original repository like a fork would. This is what you want.
+Do Not fork this code! It is meant to be used by pressing the  <span style=color:white;background:green>**Use this Template**</span> button in GitHub. This will copy the code to your own repository with no connection back to the original repository like a fork would. This is what you want.
 
 ## Development Environment
 
@@ -64,17 +66,17 @@ You can use the `docker ps` command to make sure that postgres is up and running
 The code for the microservice is contained in the `service` package. All of the test are in the `tests` folder. The code follows the **Model-View-Controller** pattern with all of the database code and business logic in the model (`models.py`), and all of the RESTful routing on the controller (`routes.py`).
 
 ```text
-├── service         <- microservice package
-│   ├── common/     <- common log and error handlers
-│   ├── config.py   <- Flask configuration object
-│   ├── models.py   <- code for the persistent model
-│   └── routes.py   <- code for the REST API routes
-├── setup.cfg       <- tools setup config
-└── tests                       <- folder for all of the tests
-    ├── factories.py            <- test factories
-    ├── test_cli_commands.py    <- CLI tests
-    ├── test_models.py          <- model unit tests
-    └── test_routes.py          <- route unit tests
+├── service         <- microservice package
+│   ├── common/     <- common log and error handlers
+│   ├── config.py   <- Flask configuration object
+│   ├── models.py   <- code for the persistent model
+│   └── routes.py   <- code for the REST API routes
+├── setup.cfg       <- tools setup config
+└── tests                       <- folder for all of the tests
+    ├── factories.py            <- test factories
+    ├── test_cli_commands.py    <- CLI tests
+    ├── test_models.py          <- model unit tests
+    └── test_routes.py          <- route unit tests
 ```
 
 ## Data Model
@@ -96,25 +98,25 @@ Complete this microservice by implementing REST API's for `READ`, `UPDATE`, `DEL
 
 ## Local Kubernetes Development
 
-This repo can also be used for local Kubernetes development. It is not advised that you run these commands in the Cloud IDE environment. The purpose of these commands are to simulate the Cloud IDE environment locally on your computer. 
+This repo can also be used for local Kubernetes development. It is not advised that you run these commands in the Cloud IDE environment. The purpose of these commands are to simulate the Cloud IDE environment locally on your computer.
 
 At a minimum, you will need [Docker Desktop](https://www.docker.com/products/docker-desktop) installed on your computer. For the full development environment, you will also need [Visual Studio Code](https://code.visualstudio.com) with the [Remote Containers](https://marketplace.visualstudio.com/items?itemName=ms-vscode-remote.remote-containers) extension from the Visual Studio Marketplace. All of these can be installed manually by clicking on the links above or you can use a package manager like **Homebrew** on Mac of **Chocolatey** on Windows.
 
 Please only use these commands for working stand-alone on your own computer with the VSCode Remote Container environment provided.
 
-1. Bring up a local K3D Kubernetes cluster
+1.  Bring up a local K3D Kubernetes cluster
 
     ```bash
     $ make cluster
     ```
 
-2. Install Tekton
+2.  Install Tekton
 
     ```bash
     $ make tekton
     ```
 
-3. Install the ClusterTasks that the Cloud IDE has
+3.  Install the ClusterTasks that the Cloud IDE has
 
     ```bash
     $ make clustertasks
