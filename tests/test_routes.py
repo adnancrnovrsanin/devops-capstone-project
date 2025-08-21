@@ -102,6 +102,13 @@ class TestAccountService(TestCase):
         for key, value in headers.items():
             self.assertEqual(response.headers.get(key), value)
 
+    def test_cors_security(self):
+        """It should return a CORS header"""
+        response = self.client.get('/', environ_overrides=HTTPS_ENVIRON)
+        self.assertEqual(response.status_code, status.HTTP_200_OK)
+        # Check for the CORS header
+        self.assertEqual(response.headers.get('Access-Control-Allow-Origin'), '*')
+
     def test_create_account(self):
         """It should Create a new Account"""
         account = AccountFactory()
@@ -165,17 +172,9 @@ class TestAccountService(TestCase):
     def test_update_account(self):
         """It should Update an existing Account"""
         test_account = self._create_accounts(1)[0]
-        # The original POST to create the account for updating was redundant
-        # self.client.post(BASE_URL, json=test_account.serialize())
-        # self.assertEqual(resp.status_code, status.HTTP_201_CREATED)
-
-        # Get the account and change the name
         new_account = test_account.serialize()
         new_account["name"] = "Something Known"
-        
-        # Corrected line
         resp = self.client.put(f"{BASE_URL}/{new_account['id']}", json=new_account)
-        
         self.assertEqual(resp.status_code, status.HTTP_200_OK)
         updated_account = resp.get_json()
         self.assertEqual(updated_account["name"], "Something Known")
