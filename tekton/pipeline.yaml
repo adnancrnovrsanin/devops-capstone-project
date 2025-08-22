@@ -1,7 +1,7 @@
 #
-# This pipeline needs the following tasks from Tekton Hub
-#   - git-clone
-#   - flake8
+# This pipeline uses Tekton Hub tasks: git-clone, flake8
+# It also uses ClusterTasks: buildah, openshift-client
+# And custom tasks: cleanup, nose
 #
 ---
 apiVersion: tekton.dev/v1beta1
@@ -13,22 +13,26 @@ spec:
     - name: pipeline-workspace
   params:
     - name: repo-url
+      description: The git repository URL to clone from.
     - name: branch
+      description: The git branch to clone.
       default: main
+    - name: build-image
+      description: The name and tag of the image to build.
   tasks:
     - name: init
+      taskRef:
+        name: cleanup
       workspaces:
         - name: source
           workspace: pipeline-workspace
-      taskRef:
-        name: cleanup
 
     - name: clone
+      taskRef:
+        name: git-clone
       workspaces:
         - name: output
           workspace: pipeline-workspace
-      taskRef:
-        name: git-clone
       params:
       - name: url
         value: $(params.repo-url)
@@ -38,11 +42,11 @@ spec:
         - init
 
     - name: lint
+      taskRef:
+        name: flake8
       workspaces:
         - name: source
           workspace: pipeline-workspace
-      taskRef:
-        name: flake8
       params:
       - name: image
         value: "python:3.9-slim"
@@ -50,3 +54,50 @@ spec:
         value: ["--count","--max-complexity=10","--max-line-length=127","--statistics"]
       runAfter:
         - clone
+        
+    - name: tests
+      taskRef:
+        name: nose
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      params:
+      - name: database_uri
+        value: "sqlite:///test.db"
+      - name: args
+        value: "-v --with-spec --spec-color"
+      runAfter:
+        - clone
+
+    - name: build
+      taskRef:
+        name: buildah
+        kind: ClusterTask
+      workspaces:
+        - name: source
+          workspace: pipeline-workspace
+      params:
+      - name: IMAGE
+        value: "$(params.build-image)"
+      runAfter:
+        - tests
+        - lint
+
+    - name: deploy
+      taskRef:
+        name: openshift-client
+        kind: ClusterTask
+      workspaces:
+        - name: manifest-dir
+          workspace: pipeline-workspace
+      params:
+      - name: SCRIPT
+        value: |
+          echo "Updating manifest..."
+          sed -i "s|IMAGE_NAME_HERE|$(params.build-image)|g" deploy/deployment.yaml
+          cat deploy/deployment.yaml
+          echo "Deploying to OpenShift..."
+          oc apply -f deploy/
+          oc get pods -l app=accounts
+      runAfter:
+        - build
